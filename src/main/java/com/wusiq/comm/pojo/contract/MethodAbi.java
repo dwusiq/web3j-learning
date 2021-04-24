@@ -5,7 +5,7 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class ContractAbi {
+public class MethodAbi {
     private Boolean constant;
     private List<InputOutput> inputs;
     private String name;

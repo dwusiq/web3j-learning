@@ -9,6 +9,8 @@ import org.web3j.tx.gas.DefaultGasProvider;
 
 import java.math.BigInteger;
 
+import static com.wusiq.comm.utils.ParamUtils.HELLO_WORLD_ADDRESS;
+
 /**
  *
  */
@@ -16,7 +18,6 @@ import java.math.BigInteger;
 public class ContractService {
     @Autowired
     private Web3j web3j;
-    public static String ADDRESS = "0x4636b02db7194271edf774b24d6fba38bdb44366";
 
     public String deployByContractClass() throws Exception {
         HelloWorld contract = HelloWorld.deploy(
@@ -25,13 +26,13 @@ public class ContractService {
     }
 
     public TransactionReceipt sendTrans(Integer value) throws Exception {
-        HelloWorld contract = new HelloWorld(ADDRESS, web3j, CredentialsService.createCredentials(), new DefaultGasProvider());
+        HelloWorld contract = new HelloWorld(HELLO_WORLD_ADDRESS, web3j, CredentialsService.createCredentials(), new DefaultGasProvider());
         TransactionReceipt result = contract.set(BigInteger.valueOf(value)).send();
         return result;
     }
 
     public Object getFromContract() throws Exception {
-        HelloWorld contract = new HelloWorld(ADDRESS, web3j, CredentialsService.createCredentials(), new DefaultGasProvider());
+        HelloWorld contract = new HelloWorld(HELLO_WORLD_ADDRESS, web3j, CredentialsService.createCredentials(), new DefaultGasProvider());
         return contract.get().send();
     }
 

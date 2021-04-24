@@ -1,0 +1,111 @@
+plugins {
+    id 'java';
+    id 'idea';
+    id "io.spring.dependency-management" version "1.0.8.RELEASE"
+    id "org.springframework.boot" version "2.3.9.RELEASE"
+}
+
+
+group = 'com.wusiiq'
+version = '0.0.1-SNAPSHOT'
+
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+[compileJava, compileTestJava, javadoc]*.options*.encoding = 'UTF-8'
+
+// In this section you declare where to find the dependencies of your project
+repositories {
+    mavenLocal()
+    maven {url "http://maven.aliyun.com/nexus/content/groups/public/"}
+}
+
+List lombok = [
+        "org.projectlombok:lombok:1.18.12"
+]
+
+def log4j_version="2.13.3"
+List log4j = [
+        "org.apache.logging.log4j:log4j-api:$log4j_version",
+        "org.apache.logging.log4j:log4j-core:$log4j_version",
+        "org.apache.logging.log4j:log4j-slf4j-impl:$log4j_version",
+        "org.apache.logging.log4j:log4j-web:$log4j_version"
+]
+
+List springboot = [
+        "org.springframework.boot:spring-boot-starter-web"
+]
+
+List test = [
+        "org.springframework.boot:spring-boot-starter-test"
+]
+
+List web3j = [
+        "org.web3j:core:5.0.0"
+]
+
+List okhttp3 = [
+        "com.squareup.okhttp3:okhttp:4.9.1"
+]
+
+
+dependencies {
+    compile springboot,log4j,web3j,okhttp3
+
+    compileOnly lombok
+    annotationProcessor lombok
+
+    testCompileOnly lombok
+    testAnnotationProcessor lombok
+
+    testCompile test
+}
+
+configurations {
+    all*.exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
+    all*.exclude group: 'org.slf4j', module: 'slf4j-log4j12'
+    all*.exclude group: 'log4j', module: 'log4j'
+}
+
+sourceSets {
+    main {
+        java {
+            srcDir 'src/main/java'
+        }
+        resources {
+            srcDir 'src/main/resources'
+        }
+    }
+}
+
+clean {
+    delete 'dist'
+    delete 'build'
+    delete 'log'
+}
+
+
+jar {
+    destinationDir file('dist/apps')
+    archiveName project.name + '.jar'
+    exclude '**/*.xml'
+    exclude '**/*.yml'
+    exclude '**/*.properties'
+
+    doLast {
+        copy {
+            from file('src/main/resources/')
+            into 'dist/conf'
+            exclude '**/static'
+        }
+        copy {
+            from configurations.runtime
+            into 'dist/lib'
+        }
+        copy {
+            from file('.').listFiles().findAll{File f -> (f.name.endsWith('.sh') || f.name.endsWith('.env'))}
+            into 'dist'
+        }
+    }
+}
